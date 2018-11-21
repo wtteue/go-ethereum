@@ -86,6 +86,7 @@ const (
 	Bn256PairingBaseGas     uint64 = 100000 // Base price for an elliptic curve pairing check
 	Bn256PairingPerPointGas uint64 = 80000  // Per-point price for an elliptic curve pairing check
 	Ed25519VerifyGas        uint64 = 2000   // Ed25519 signature verification gas price
+	VRFverifyGas            uint64 = 3600   // VRF verification gas price
 )
 
 var (

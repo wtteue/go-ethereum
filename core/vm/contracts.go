@@ -18,8 +18,10 @@ package vm
 
 import (
 	"crypto/sha256"
+	"encoding/binary"
 	"errors"
 	"math/big"
+	"selection/vrftest"
 
 	"golang.org/x/crypto/ed25519"
 
@@ -51,15 +53,16 @@ var PrecompiledContractsHomestead = map[common.Address]PrecompiledContract{
 // PrecompiledContractsByzantium contains the default set of pre-compiled Ethereum
 // contracts used in the Byzantium release.
 var PrecompiledContractsByzantium = map[common.Address]PrecompiledContract{
-	common.BytesToAddress([]byte{1}): &ecrecover{},
-	common.BytesToAddress([]byte{2}): &sha256hash{},
-	common.BytesToAddress([]byte{3}): &ripemd160hash{},
-	common.BytesToAddress([]byte{4}): &dataCopy{},
-	common.BytesToAddress([]byte{5}): &bigModExp{},
-	common.BytesToAddress([]byte{6}): &bn256Add{},
-	common.BytesToAddress([]byte{7}): &bn256ScalarMul{},
-	common.BytesToAddress([]byte{8}): &bn256Pairing{},
-	common.BytesToAddress([]byte{9}): &ed25519Verify{},
+	common.BytesToAddress([]byte{1}):  &ecrecover{},
+	common.BytesToAddress([]byte{2}):  &sha256hash{},
+	common.BytesToAddress([]byte{3}):  &ripemd160hash{},
+	common.BytesToAddress([]byte{4}):  &dataCopy{},
+	common.BytesToAddress([]byte{5}):  &bigModExp{},
+	common.BytesToAddress([]byte{6}):  &bn256Add{},
+	common.BytesToAddress([]byte{7}):  &bn256ScalarMul{},
+	common.BytesToAddress([]byte{8}):  &bn256Pairing{},
+	common.BytesToAddress([]byte{9}):  &ed25519Verify{},
+	common.BytesToAddress([]byte{10}): &vrfVerify{},
 }
 
 // RunPrecompiledContract runs and evaluates the output of a precompiled contract.
@@ -381,4 +384,19 @@ func (c *ed25519Verify) Run(input []byte) ([]byte, error) {
 		return true32Byte, nil
 	}
 	return false32Byte, nil
+}
+
+type vrfVerify struct{}
+
+// RequiredGas returns the gas required to execute the pre-compiled contract.
+func (c *vrfVerify) RequiredGas(input []byte) uint64 {
+	return params.VRFverifyGas
+}
+func (c *vrfVerify) Run(input []byte) ([]byte, error) {
+	//var jclient int
+	jclient := vrftest.Testvrf()
+	bs := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bs, uint32(jclient))
+	//fmt.Println(bs)
+	return bs, nil
 }
