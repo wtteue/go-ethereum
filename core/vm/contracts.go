@@ -18,8 +18,8 @@ package vm
 
 import (
 	"crypto/sha256"
-	"encoding/binary"
 	"errors"
+	"fmt"
 	"math/big"
 	"selection/vrftest"
 
@@ -254,6 +254,8 @@ func (c *bigModExp) Run(input []byte) ([]byte, error) {
 		// Modulo 0 is undefined, return zero
 		return common.LeftPadBytes([]byte{}, int(modLen)), nil
 	}
+	fmt.Println("The answer to be returned is ", common.LeftPadBytes(base.Exp(base, exp, mod).Bytes(), int(modLen)))
+
 	return common.LeftPadBytes(base.Exp(base, exp, mod).Bytes(), int(modLen)), nil
 }
 
@@ -395,8 +397,11 @@ func (c *vrfVerify) RequiredGas(input []byte) uint64 {
 func (c *vrfVerify) Run(input []byte) ([]byte, error) {
 	//var jclient int
 	jclient := vrftest.Testvrf()
-	bs := make([]byte, 4)
-	binary.LittleEndian.PutUint32(bs, uint32(jclient))
-	//fmt.Println(bs)
-	return bs, nil
+	// bs := make([]byte, 4)
+
+	// binary.LittleEndian.PutUint32(bs, uint32(jclient))
+	s := string(jclient)
+	us := []byte(s)
+	fmt.Println("The answer to be returned is ", us)
+	return us, nil
 }
